@@ -1,0 +1,33 @@
+{
+    "name": "@gavant/orbit-model",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "build": "tsc --build",
+        "clean": "tsc --build --clean"
+    },
+    "dependencies": {
+        "@orbit/coordinator": "^0.17.0-beta.25",
+        "@orbit/core": "^0.17.0-beta.25",
+        "@orbit/data": "^0.17.0-beta.25",
+        "@orbit/identity-map": "^0.17.0-beta.25",
+        "@orbit/jsonapi": "^0.17.0-beta.25",
+        "@orbit/memory": "^0.17.0-beta.25",
+        "@orbit/utils": "^0.17.0-beta.25",
+        "true-myth": "^5.0.0"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.12.9",
+        "@babel/plugin-proposal-decorators": "^7.16.4",
+        "@babel/plugin-transform-flow-strip-types": "^7.16.0",
+        "@babel/preset-typescript": "^7.16.0",
+        "@babel/runtime": "^7.12.5",
+        "eslint": "^7.14.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "prettier": "^2.4.1",
+        "typescript": "^4.4.4"
+    },
+    "volta": {
+        "node": "16.13.0"
+    }
+}
