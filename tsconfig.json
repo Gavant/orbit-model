@@ -14,14 +14,14 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noEmitOnError": false,
-        "noEmit": true,
         "inlineSourceMap": true,
         "inlineSources": true,
         "strictFunctionTypes": false,
         "baseUrl": ".",
         "module": "es2020",
         "experimentalDecorators": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "declaration": true
     },
-    "include": ["src/**/*.ts"]
+    "include": ["src/**/*.ts", "index.ts"]
 }

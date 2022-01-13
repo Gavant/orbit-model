@@ -1,11 +1,18 @@
+import Model from 'src/model';
+
 import { ModelDefinition, RecordSchema, RecordSchemaSettings } from '@orbit/records';
 import { Dict } from '@orbit/utils';
 
 type SchemaInjections = { modelNames?: string[] } & RecordSchemaSettings;
 
-export const Owner = {};
+export let Owner = {};
 
-export default {
+export function initialize(mapping: { [key: string]: Model }) {
+    Owner = mapping;
+    SchemaFactory.create();
+}
+
+const SchemaFactory = {
     create(injections: SchemaInjections = {}): RecordSchema {
         if (injections.models === undefined) {
             const modelSchemas: Dict<ModelDefinition> = {};
@@ -31,3 +38,5 @@ export default {
         return new RecordSchema(injections);
     },
 };
+
+export default SchemaFactory;
