@@ -9,7 +9,7 @@ export let Owner = {};
 
 export function initialize(mapping: { [key: string]: Model }) {
     Owner = mapping;
-    SchemaFactory.create();
+    return SchemaFactory.create();
 }
 
 const SchemaFactory = {
