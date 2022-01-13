@@ -1,10 +1,9 @@
-import { camelize } from 'src/utils/string';
-
 import { Orbit } from '@orbit/core';
 import { HasManyRelationshipDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { defineRelationship } from '../utils/model-definition';
+import { camelize } from '../utils/string';
 
 const { assert } = Orbit;
 
