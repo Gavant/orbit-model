@@ -1,4 +1,4 @@
-import { camelize } from 'portal/src/utilities/string';
+import { camelize } from 'src/utils/string';
 
 import { Orbit } from '@orbit/core';
 import { HasOneRelationshipDefinition } from '@orbit/records';
