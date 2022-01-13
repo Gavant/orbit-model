@@ -1,0 +1,9 @@
+src
+.gitignore
+.npmignore
+.prettierrc.js
+.release-it.json
+.yarnrc
+index.ts
+tsconfig.json
+yarn.lock
