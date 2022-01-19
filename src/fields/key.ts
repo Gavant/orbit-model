@@ -1,10 +1,7 @@
-import { Orbit } from '@orbit/core';
 import { KeyDefinition } from '@orbit/records';
 
 import Model from '../model';
 import { defineKey } from '../utils/model-definition';
-
-const { assert } = Orbit;
 
 export interface TrackedKey {
     get(this: Model): string;
