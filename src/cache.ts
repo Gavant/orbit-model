@@ -6,10 +6,11 @@ import {
     FullRequestOptions,
     FullResponse,
     RequestOptions,
+    Source,
 } from '@orbit/data';
 import IdentityMap from '@orbit/identity-map';
 import { MemoryCache } from '@orbit/memory';
-import { RecordCacheQueryOptions, RecordCacheTransformOptions } from '@orbit/record-cache';
+import { RecordCacheQueryOptions, RecordCacheTransformOptions, SyncLiveQuery } from '@orbit/record-cache';
 import {
     InitializedRecord,
     RecordIdentity,
@@ -43,7 +44,8 @@ export interface CacheSettings {
     sourceCache: MemoryCache;
 }
 
-export default class Cache {
+// @evented
+export default class Cache extends Source {
     #sourceCache: MemoryCache<
         RecordCacheQueryOptions,
         RecordCacheTransformOptions,
@@ -51,6 +53,7 @@ export default class Cache {
         ModelAwareTransformBuilder
     >;
     #modelFactory: ModelFactory;
+
     #patchUnbind: () => void;
     allowUpdates: boolean;
 
@@ -59,6 +62,7 @@ export default class Cache {
     });
 
     constructor(settings: CacheSettings) {
+        super();
         this.#sourceCache = settings.sourceCache;
         this.#modelFactory = new ModelFactory(this);
         this.allowUpdates = this.#sourceCache.base !== undefined;
@@ -296,15 +300,21 @@ export default class Cache {
         }
     }
 
-    // liveQuery(
-    //     queryOrExpressions: ModelAwareQueryOrExpressions,
-    //     options?: DefaultRequestOptions<RecordCacheQueryOptions>,
-    //     id?: string,
-    // ): LiveQuery {
-    //     const query = buildQuery(queryOrExpressions, options, id, this.#sourceCache.queryBuilder);
-    //     const liveQuery = this.#sourceCache.liveQuery(query);
-    //     return new LiveQuery({ liveQuery, cache: this, query });
-    // }
+    liveQuery(
+        queryOrExpressions: ModelAwareQueryOrExpressions,
+        options?: DefaultRequestOptions<RecordCacheQueryOptions>,
+        id?: string,
+    ): SyncLiveQuery {
+        const query = buildQuery(queryOrExpressions, options, id, this.#sourceCache.queryBuilder);
+
+        const liveQuery = new SyncLiveQuery({
+            // @ts-ignore
+            cache: this,
+            debounce: true,
+            query,
+        });
+        return liveQuery;
+    }
 
     /**
      * @deprecated
@@ -476,11 +486,13 @@ export default class Cache {
 
     private notifyPropertyChange(identity: RecordIdentity, property: string): void {
         const record = this._identityMap.get(identity);
+        // this.onPropertyChange(record, property);
         record?.$notifyPropertyChange(property);
     }
 
     private generatePatchListener(): (operation: RecordOperation) => void {
         return (operation: RecordOperation) => {
+            this.emit('patch', operation);
             const record = operation.record as InitializedRecord;
             const { type, id, keys, attributes, relationships } = record;
             const identity = { type, id };
