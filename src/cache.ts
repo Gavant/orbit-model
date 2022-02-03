@@ -6,11 +6,17 @@ import {
     FullRequestOptions,
     FullResponse,
     RequestOptions,
-    Source,
 } from '@orbit/data';
 import IdentityMap from '@orbit/identity-map';
 import { MemoryCache } from '@orbit/memory';
-import { RecordCacheQueryOptions, RecordCacheTransformOptions, SyncLiveQuery } from '@orbit/record-cache';
+import {
+    RecordCacheQueryOptions,
+    RecordCacheTransformOptions,
+    RecordCacheUpdateDetails,
+    RecordRelationshipIdentity,
+    SyncLiveQuery,
+    SyncRecordCache,
+} from '@orbit/record-cache';
 import {
     InitializedRecord,
     RecordIdentity,
@@ -45,7 +51,7 @@ export interface CacheSettings {
 }
 
 // @evented
-export default class Cache extends Source {
+export default class Cache extends SyncRecordCache {
     #sourceCache: MemoryCache<
         RecordCacheQueryOptions,
         RecordCacheTransformOptions,
@@ -62,7 +68,7 @@ export default class Cache extends Source {
     });
 
     constructor(settings: CacheSettings) {
-        super();
+        super({ name: 'model-cache', schema: settings.sourceCache.schema });
         this.#sourceCache = settings.sourceCache;
         this.#modelFactory = new ModelFactory(this);
         this.allowUpdates = this.#sourceCache.base !== undefined;
@@ -223,19 +229,19 @@ export default class Cache extends Source {
 
     update<RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>>(
         transformOrOperations: ModelAwareTransformOrOperations,
-        options?: DefaultRequestOptions<RequestOptions>,
+        options?: DefaultRequestOptions<RecordCacheTransformOptions>,
         id?: string,
     ): RequestData;
     update<RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>>(
         transformOrOperations: ModelAwareTransformOrOperations,
-        options: FullRequestOptions<RequestOptions>,
+        options: FullRequestOptions<RecordCacheTransformOptions>,
         id?: string,
-    ): FullResponse<RequestData, unknown, RecordOperation>;
+    ): FullResponse<RequestData, RecordCacheUpdateDetails, RecordOperation>;
     update<RequestData extends RecordTransformResult<Model> = RecordTransformResult<Model>>(
         transformOrOperations: ModelAwareTransformOrOperations,
-        options?: RequestOptions,
+        options?: RecordCacheTransformOptions,
         id?: string,
-    ): RequestData | FullResponse<RequestData, unknown, RecordOperation> {
+    ): RequestData | FullResponse<RequestData, RecordCacheUpdateDetails, RecordOperation> {
         assert(
             "You tried to update a cache that is not a fork, which is not allowed by default. Either fork the store/cache before making updates directly to the cache or, if the update you are making is ephemeral, set 'cache.allowUpdates = true' to override this assertion.",
             this.allowUpdates,
@@ -254,7 +260,7 @@ export default class Cache extends Source {
                     data,
                 };
             }
-            return response as FullResponse<RequestData, unknown, RecordOperation>;
+            return response as FullResponse<RequestData, RecordCacheUpdateDetails, RecordOperation>;
         } else {
             let response = this.#sourceCache.update(transform);
             if (response !== undefined) {
@@ -308,7 +314,6 @@ export default class Cache extends Source {
         const query = buildQuery(queryOrExpressions, options, id, this.#sourceCache.queryBuilder);
 
         const liveQuery = new SyncLiveQuery({
-            // @ts-ignore
             cache: this,
             debounce: true,
             query,
@@ -526,5 +531,35 @@ export default class Cache extends Source {
                     break;
             }
         };
+    }
+
+    addInverseRelationshipsSync(relationships: RecordRelationshipIdentity[]) {
+        return this.sourceCache.addInverseRelationshipsSync(relationships);
+    }
+
+    getInverseRelationshipsSync(recordIdentityOrIdentities: RecordIdentity | RecordIdentity[]) {
+        return this.sourceCache.getInverseRelationshipsSync(recordIdentityOrIdentities);
+    }
+
+    getRecordSync(recordIdentity: RecordIdentity): InitializedRecord | undefined {
+        return this.sourceCache.getRecordSync(recordIdentity);
+    }
+    getRecordsSync(typeOrIdentities?: string | RecordIdentity[]): InitializedRecord[] {
+        return this.sourceCache.getRecordsSync(typeOrIdentities);
+    }
+    setRecordSync(record: InitializedRecord): void {
+        return this.sourceCache.setRecordSync(record);
+    }
+    setRecordsSync(records: InitializedRecord[]): void {
+        return this.sourceCache.setRecordsSync(records);
+    }
+    removeRecordSync(recordIdentity: RecordIdentity): InitializedRecord | undefined {
+        return this.sourceCache.removeRecordSync(recordIdentity);
+    }
+    removeRecordsSync(recordIdentities: RecordIdentity[]): InitializedRecord[] {
+        return this.sourceCache.removeRecordsSync(recordIdentities);
+    }
+    removeInverseRelationshipsSync(relationships: RecordRelationshipIdentity[]): void {
+        return this.sourceCache.removeInverseRelationshipsSync(relationships);
     }
 }
