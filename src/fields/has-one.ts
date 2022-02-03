@@ -31,12 +31,14 @@ export default function hasOne(
             '@hasOne can be defined with a `type` and `definition` object but not two `definition` objects',
             def === undefined,
         );
-
-        assert('@hasOne() requires a `type` argument.', relDef?.type !== undefined);
     }
 
-    relDef.kind = 'hasOne';
-    relDef.type = camelize(relDef.type as string);
+    if (relDef.type !== undefined) {
+        relDef.kind = 'hasOne';
+        relDef.type = Array.isArray(relDef.type) ? relDef.type.map(type => camelize(type)) : camelize(relDef.type);
+    } else {
+        assert('@hasOne() requires a `type` argument.', relDef?.type !== undefined);
+    }
 
     return (target: Model, property: string): TrackedHasOne => {
         function get(this: Model): Model | null {
