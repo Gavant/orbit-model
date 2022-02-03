@@ -10,12 +10,11 @@ import {
 import IdentityMap from '@orbit/identity-map';
 import { MemoryCache } from '@orbit/memory';
 import {
+    RecordCache,
     RecordCacheQueryOptions,
     RecordCacheTransformOptions,
     RecordCacheUpdateDetails,
-    RecordRelationshipIdentity,
     SyncLiveQuery,
-    SyncRecordCache,
 } from '@orbit/record-cache';
 import {
     InitializedRecord,
@@ -50,8 +49,7 @@ export interface CacheSettings {
     sourceCache: MemoryCache;
 }
 
-// @evented
-export default class Cache extends SyncRecordCache {
+export default class Cache extends RecordCache {
     #sourceCache: MemoryCache<
         RecordCacheQueryOptions,
         RecordCacheTransformOptions,
@@ -314,6 +312,7 @@ export default class Cache extends SyncRecordCache {
         const query = buildQuery(queryOrExpressions, options, id, this.#sourceCache.queryBuilder);
 
         const liveQuery = new SyncLiveQuery({
+            //@ts-ignore
             cache: this,
             debounce: true,
             query,
@@ -531,35 +530,5 @@ export default class Cache extends SyncRecordCache {
                     break;
             }
         };
-    }
-
-    addInverseRelationshipsSync(relationships: RecordRelationshipIdentity[]) {
-        return this.sourceCache.addInverseRelationshipsSync(relationships);
-    }
-
-    getInverseRelationshipsSync(recordIdentityOrIdentities: RecordIdentity | RecordIdentity[]) {
-        return this.sourceCache.getInverseRelationshipsSync(recordIdentityOrIdentities);
-    }
-
-    getRecordSync(recordIdentity: RecordIdentity): InitializedRecord | undefined {
-        return this.sourceCache.getRecordSync(recordIdentity);
-    }
-    getRecordsSync(typeOrIdentities?: string | RecordIdentity[]): InitializedRecord[] {
-        return this.sourceCache.getRecordsSync(typeOrIdentities);
-    }
-    setRecordSync(record: InitializedRecord): void {
-        return this.sourceCache.setRecordSync(record);
-    }
-    setRecordsSync(records: InitializedRecord[]): void {
-        return this.sourceCache.setRecordsSync(records);
-    }
-    removeRecordSync(recordIdentity: RecordIdentity): InitializedRecord | undefined {
-        return this.sourceCache.removeRecordSync(recordIdentity);
-    }
-    removeRecordsSync(recordIdentities: RecordIdentity[]): InitializedRecord[] {
-        return this.sourceCache.removeRecordsSync(recordIdentities);
-    }
-    removeInverseRelationshipsSync(relationships: RecordRelationshipIdentity[]): void {
-        return this.sourceCache.removeInverseRelationshipsSync(relationships);
     }
 }
