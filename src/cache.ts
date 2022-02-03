@@ -490,7 +490,6 @@ export default class Cache extends RecordCache {
 
     private notifyPropertyChange(identity: RecordIdentity, property: string): void {
         const record = this._identityMap.get(identity);
-        // this.onPropertyChange(record, property);
         record?.$notifyPropertyChange(property);
     }
 
