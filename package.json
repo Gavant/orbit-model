@@ -1,6 +1,6 @@
 {
     "name": "@gavant/orbit-model",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "main": "dist/index.js",
     "private": false,
     "scripts": {
