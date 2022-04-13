@@ -5,29 +5,46 @@
     "private": false,
     "scripts": {
         "build": "tsc --build",
-        "clean": "tsc --build --clean"
+        "clean": "tsc --build --clean",
+        "test": "jest"
     },
     "dependencies": {
         "@orbit/coordinator": "^0.17.0",
         "@orbit/core": "^0.17.0",
         "@orbit/data": "^0.17.0",
         "@orbit/identity-map": "^0.17.0",
-        "@orbit/jsonapi": "^0.17.0",
-        "@orbit/memory": "^0.17.0",
+        "@orbit/jsonapi": "^0.17.1",
+        "@orbit/memory": "^0.17.2",
         "@orbit/utils": "^0.17.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.12.9",
+        "@babel/core": "^7.17.9",
         "@babel/plugin-proposal-decorators": "^7.16.4",
         "@babel/plugin-transform-flow-strip-types": "^7.16.0",
-        "@babel/preset-typescript": "^7.16.0",
+        "@babel/preset-env": "^7.16.11",
+        "@babel/preset-typescript": "^7.16.7",
         "@babel/runtime": "^7.12.5",
+        "@types/jest": "^27.4.1",
+        "@types/sinon": "^10.0.11",
         "auto-changelog": "^2.3.0",
         "eslint": "^7.14.0",
         "eslint-plugin-prettier": "^4.0.0",
+        "isomorphic-fetch": "^3.0.0",
+        "jest": "^27.5.1",
         "prettier": "^2.4.1",
         "release-it": "^14.12.1",
+        "sinon": "^13.0.1",
         "typescript": "^4.4.4"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "ts"
+        ],
+        "moduleDirectories": [
+            "node_modules",
+            "."
+        ]
     },
     "volta": {
         "node": "16.13.0"
